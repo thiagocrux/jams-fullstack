@@ -1,0 +1,203 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ENUMs for Applications
+enum ApplicationStatus {
+  SUBMITTED
+  CANDIDATES_TRIAGE
+  AUDIO_RECORDING
+  VIDEO_RECORDING
+  TECHNICAL_TEST
+  HR_SCREENING
+  TECHNICAL_TEAM_SCREENING
+  FOUNDER_SCREENING
+  CLIENT_SCREENING
+  PROPOSAL
+  REJECTED
+  ACCEPTED
+  WITHDRAWN
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum SeniorityLevel {
+  JUNIOR
+  MID_LEVEL
+  SENIOR
+}
+
+enum WorkModel {
+  ON_SITE
+  REMOTE
+  HYBRID
+}
+
+enum ContractType {
+  CLT
+  PJ
+  TEMPORARY
+}
+
+enum ApplicationSource {
+  LINKEDIN
+  REFERRAL
+  COMPANY_WEBSITE
+}
+
+// ENUMs for Companies
+enum CompanyCategory {
+  TECH
+  FINTECH
+  STARTUP
+  CONSULTING
+  ECOMMERCE
+  BANK
+  OTHER
+}
+
+// ENUMs for Feedbacks
+enum InteractionType {
+  HR_INTERVIEW
+  TECHNICAL_TEST
+  EMAIL
+  PHONE_CALL
+}
+
+// Models
+model Candidate {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  linkedin  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime?
+  isDeleted Boolean  @default(false)
+
+  // Relationships
+  sessions     Session[]
+  applications Application[]
+
+  @@map("candidates")
+}
+
+model Session {
+  id          String    @id @default(uuid())
+  candidateId String
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime?
+  isDeleted   Boolean   @default(false)
+
+  // Relationships
+  candidate Candidate @relation(fields: [candidateId], references: [id])
+
+  @@map("sessions")
+}
+
+model ApplicantTrackingSystem {
+  id        String   @id @default(uuid())
+  name      String
+  site      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime?
+  isDeleted Boolean  @default(false)
+
+  // Relationships
+  applications Application[]
+
+  @@map("applicant_tracking_systems")
+}
+
+model Company {
+  id           String          @id @default(uuid())
+  name         String
+  category     CompanyCategory @default(TECH)
+  site         String?
+  linkedin     String?
+  observations String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime?
+  isDeleted    Boolean         @default(false)
+
+  // Relationships
+  applications Application[]
+
+  @@map("companies")
+}
+
+model Application {
+  id                         String                   @id @default(uuid())
+  position                   String
+  companyId                  String
+  applicationDate            DateTime                 @default(now())
+  status                     ApplicationStatus        @default(SUBMITTED)
+  priority                   Priority                 @default(MEDIUM)
+  seniorityLevel             SeniorityLevel           @default(JUNIOR)
+  workModel                  WorkModel                @default(HYBRID)
+  contractType               ContractType             @default(CLT)
+  applicantTrackingSystemId  String
+  source                     ApplicationSource        @default(LINKEDIN)
+  jobPostingLink             String
+  jobDescription             String
+  minimumSalaryRange         Decimal
+  maximumSalaryRange         Decimal
+  agreedFollowupDate         DateTime?
+  completionDate             DateTime?
+  ghosted                    Boolean                  @default(false)
+  hrLinkedin                 String?
+  hrObservations             String?
+  leaderLinkedin             String?
+  leaderObservations         String?
+  hiredCompetitorLinkedin    String?
+  hiredCompetitorAnalysis    String?
+  improvementIdeas           String?
+  generalNotes               String?
+  createdAt                  DateTime                 @default(now())
+  updatedAt                  DateTime?
+  isDeleted                  Boolean                  @default(false)
+
+  // Relationships
+  company                   Company                  @relation(fields: [companyId], references: [id])
+  applicantTrackingSystem   ApplicantTrackingSystem  @relation(fields: [applicantTrackingSystemId], references: [id])
+  candidate                 Candidate                @relation(fields: [candidateId], references: [id])
+  feedbacks                 Feedback[]
+
+  candidateId String
+
+  @@map("applications")
+}
+
+model Feedback {
+  id              String            @id @default(uuid())
+  applicationId   String
+  title           String
+  content         String
+  senderName      String?
+  senderEmail     String?
+  senderLinkedin  String?
+  interactionType InteractionType   @default(HR_INTERVIEW)
+  status          ApplicationStatus @default(SUBMITTED)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime?
+  isDeleted       Boolean           @default(false)
+
+  // Relationships
+  application Application @relation(fields: [applicationId], references: [id])
+
+  @@map("feedbacks")
+}
