@@ -24,7 +24,7 @@ logs
 !.env.example
 
 # Prisma
-/app/generated/prisma
+/prisma/generated/
 
 # Database files
 *.db
