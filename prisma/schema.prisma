@@ -7,7 +7,6 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
 // ENUMs for Applications
@@ -34,6 +33,7 @@ enum Priority {
 }
 
 enum SeniorityLevel {
+  TRAINEE
   JUNIOR
   MID_LEVEL
   SENIOR
@@ -68,6 +68,17 @@ enum CompanyCategory {
   OTHER
 }
 
+// ENUMs for Steps
+enum StepStatus {
+  PENDING
+  AWAITING_FEEDBACK
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  WITHDRAWN
+  CANCELED
+}
+
 // ENUMs for Feedbacks
 enum InteractionType {
   HR_INTERVIEW
@@ -78,48 +89,42 @@ enum InteractionType {
 
 // Models
 model Candidate {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
-  email     String   @unique
+  email     String    @unique
   password  String
-  linkedin  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime?
-  isDeleted Boolean  @default(false)
+  linkedin  String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @map("updated_at")
 
-  // Relationships
   sessions     Session[]
   applications Application[]
 
-  @@map("candidates")
+  @@map("candidate")
 }
 
 model Session {
   id          String    @id @default(uuid())
-  candidateId String
-  expiresAt   DateTime
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime?
-  isDeleted   Boolean   @default(false)
+  candidateId String    @map("candidate_id")
+  expiresAt   DateTime  @map("expires_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @map("updated_at")
 
-  // Relationships
-  candidate Candidate @relation(fields: [candidateId], references: [id])
+  candidate Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
 
-  @@map("sessions")
+  @@map("session")
 }
 
 model ApplicantTrackingSystem {
-  id        String   @id @default(uuid())
-  name      String
+  id        String    @id @default(uuid())
+  name      String    @unique
   site      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime?
-  isDeleted Boolean  @default(false)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @map("updated_at")
 
-  // Relationships
   applications Application[]
 
-  @@map("applicant_tracking_systems")
+  @@map("applicant_tracking_system")
 }
 
 model Company {
@@ -129,74 +134,86 @@ model Company {
   site         String?
   linkedin     String?
   observations String?
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime?
-  isDeleted    Boolean         @default(false)
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime?       @map("updated_at")
 
-  // Relationships
   applications Application[]
 
-  @@map("companies")
+  @@map("company")
 }
 
 model Application {
-  id                         String                   @id @default(uuid())
-  position                   String
-  companyId                  String
-  applicationDate            DateTime                 @default(now())
-  status                     ApplicationStatus        @default(SUBMITTED)
-  priority                   Priority                 @default(MEDIUM)
-  seniorityLevel             SeniorityLevel           @default(JUNIOR)
-  workModel                  WorkModel                @default(HYBRID)
-  contractType               ContractType             @default(CLT)
-  applicantTrackingSystemId  String
-  source                     ApplicationSource        @default(LINKEDIN)
-  jobPostingLink             String
-  jobDescription             String
-  minimumSalaryRange         Decimal
-  maximumSalaryRange         Decimal
-  agreedFollowupDate         DateTime?
-  completionDate             DateTime?
-  ghosted                    Boolean                  @default(false)
-  hrLinkedin                 String?
-  hrObservations             String?
-  leaderLinkedin             String?
-  leaderObservations         String?
-  hiredCompetitorLinkedin    String?
-  hiredCompetitorAnalysis    String?
-  improvementIdeas           String?
-  generalNotes               String?
-  createdAt                  DateTime                 @default(now())
-  updatedAt                  DateTime?
-  isDeleted                  Boolean                  @default(false)
+  id                        String            @id @default(uuid())
+  candidateId               String            @map("candidate_id")
+  position                  String
+  companyId                 String            @map("company_id")
+  applicationDate           DateTime          @default(now()) @map("application_date")
+  status                    ApplicationStatus @default(SUBMITTED)
+  priority                  Priority          @default(MEDIUM)
+  seniorityLevel            SeniorityLevel    @default(JUNIOR) @map("seniority_level")
+  workModel                 WorkModel         @default(HYBRID) @map("work_model")
+  contractType              ContractType      @default(CLT) @map("contract_type")
+  applicantTrackingSystemId String            @map("applicant_tracking_system_id")
+  source                    ApplicationSource @default(LINKEDIN)
+  jobPostingLink            String            @map("job_posting_link")
+  jobDescription            String            @map("job_description")
+  salaryInformation         String            @map("salary_information")
+  salaryOffer               Decimal           @map("salary_offer")
+  agreedFollowupDate        DateTime?         @map("agreed_followup_date")
+  completionDate            DateTime?         @map("completion_date")
+  ghosted                   Boolean           @default(false)
+  hrLinkedin                String?           @map("hr_linkedin")
+  hrObservations            String?           @map("hr_observations")
+  leaderLinkedin            String?           @map("leader_linkedin")
+  leaderObservations        String?           @map("leader_observations")
+  hiredCompetitorLinkedin   String?           @map("hired_competitor_linkedin")
+  hiredCompetitorAnalysis   String?           @map("hired_competitor_analysis")
+  improvementIdeas          String?           @map("improvement_ideas")
+  generalNotes              String?           @map("general_notes")
+  createdAt                 DateTime          @default(now()) @map("created_at")
+  updatedAt                 DateTime?         @map("updated_at")
 
-  // Relationships
-  company                   Company                  @relation(fields: [companyId], references: [id])
-  applicantTrackingSystem   ApplicantTrackingSystem  @relation(fields: [applicantTrackingSystemId], references: [id])
-  candidate                 Candidate                @relation(fields: [candidateId], references: [id])
-  feedbacks                 Feedback[]
+  company                 Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  applicantTrackingSystem ApplicantTrackingSystem @relation(fields: [applicantTrackingSystemId], references: [id], onDelete: Cascade)
+  candidate               Candidate               @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  steps                   Step[]
 
-  candidateId String
+  @@map("application")
+}
 
-  @@map("applications")
+model Step {
+  id               String     @id @default(uuid())
+  applicationId    String     @map("application_id")
+  name             String
+  description      String
+  status           StepStatus
+  startedAt        DateTime?  @map("started_at")
+  finishedAt       DateTime?  @map("finished_at")
+  observations     String?
+  organizerContact String?    @map("organizer_contact")
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime?  @map("updated_at")
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  feedbacks   Feedback[]
+
+  @@map("step")
 }
 
 model Feedback {
   id              String            @id @default(uuid())
-  applicationId   String
+  stepId          String            @map("step_id")
   title           String
   content         String
-  senderName      String?
-  senderEmail     String?
-  senderLinkedin  String?
-  interactionType InteractionType   @default(HR_INTERVIEW)
+  senderName      String?           @map("sender_name")
+  senderEmail     String?           @map("sender_email")
+  senderLinkedin  String?           @map("sender_linkedin")
+  interactionType InteractionType   @default(HR_INTERVIEW) @map("interaction_type")
   status          ApplicationStatus @default(SUBMITTED)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime?
-  isDeleted       Boolean           @default(false)
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime?         @map("updated_at")
 
-  // Relationships
-  application Application @relation(fields: [applicationId], references: [id])
+  step Step @relation(fields: [stepId], references: [id], onDelete: Cascade)
 
-  @@map("feedbacks")
+  @@map("feedback")
 }
