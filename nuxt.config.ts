@@ -2,7 +2,6 @@ import tailwindcss from '@tailwindcss/vite'
 import { defineNuxtConfig } from 'nuxt/config'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import viteTsconfigPaths from 'vite-tsconfig-paths'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -10,7 +9,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxt/ui', 'nuxt-file-storage'],
   vite: {
-    plugins: [viteTsconfigPaths(), tailwindcss()],
+    plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: ['@vueuse/core'],
+    },
   },
   fileStorage: {
     mount: path.resolve(__dirname, 'prisma'),

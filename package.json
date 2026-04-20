@@ -15,20 +15,19 @@
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
-    "@nuxt/ui": "^4.1.0",
-    "@prisma/client": "^6.18.0",
-    "@tailwindcss/vite": "^4.1.16",
-    "@vueuse/core": "^14.0.0",
-    "dotenv": "^17.2.3",
-    "nuxt": "^4.2.0",
-    "prisma": "^7.1.0",
-    "tailwindcss": "^4.1.16",
-    "vue": "^3.5.22",
-    "vue-router": "^4.6.3"
+    "@nuxt/ui": "^4.6.1",
+    "@prisma/client": "7.7.0",
+    "@tailwindcss/vite": "^4.2.2",
+    "@vueuse/core": "^14.2.1",
+    "dotenv": "^17.4.2",
+    "nuxt": "^4.4.2",
+    "prisma": "7.7.0",
+    "tailwindcss": "^4.2.2",
+    "vue": "^3.5.32",
+    "vue-router": "^5.0.4"
   },
   "devDependencies": {
-    "@types/node": "^24.10.0",
-    "nuxt-file-storage": "^0.3.0",
-    "vite-tsconfig-paths": "^5.1.4"
+    "@types/node": "^25.6.0",
+    "nuxt-file-storage": "^0.3.2"
   }
 }
