@@ -1,10 +1,9 @@
-import pkg from '@prisma/client'
-const { PrismaClient } = pkg
+import { PrismaClient } from '@prisma/client'
 
-let prisma: InstanceType<typeof PrismaClient>
+let prisma: PrismaClient
 
 declare global {
-  var __prisma: InstanceType<typeof PrismaClient> | undefined
+  var __prisma: PrismaClient | undefined
 }
 
 if (process.env.NODE_ENV === 'production') {
