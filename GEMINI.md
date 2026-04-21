@@ -29,9 +29,11 @@ This document provides guidelines and contextual information for the development
 
 ## Development Conventions
 
-### Coding Standards
+### Error Handling
+- **Domain Errors:** Always check `server/domain/errors/` for the most specific `AppError` subclass before throwing an error.
+- **Custom Errors:** If no suitable error exists in `server/domain/errors/`, create a new one following the `AppError` base class structure, ensuring the correct HTTP status code is assigned.
+- **Genereic Errors:** Never throw generic `Error` objects; use `AppError` subclasses to ensure predictable API responses.
 
-- **Clean Code:** Always follow Clean Code principles. Names for functions, variables, constants, and other symbols must be clear, self-explanatory, and avoid abbreviations that hinder the understanding of context or purpose.
 - **Documentation:** Major blocks and complex functions must be documented following the **Google Documentation Style**. For internal or simpler logic, documentation is optional and should be used based on the complexity to ensure maintainability. All comments and documentation must be written in **English**.
 - **Refactoring:** When refactoring code, you must also review and update any existing documentation to ensure it remains accurate and reflects the new implementation.
 - **Testing:** When modifying a file that has a corresponding test file, the test file must be reviewed and updated as needed. This is mandatory if changes to core functionality would cause existing tests to fail, ensuring that the test suite always reflects the current state of the application.
@@ -54,6 +56,8 @@ This document provides guidelines and contextual information for the development
 
 - **Semicolons:** The project does not use semicolons (following modern trends in the Vue/Nuxt ecosystem).
 - **Imports:** Use the `@/` or `~/` alias for paths starting from the project root.
+- **Clean Code:** Write clear, self-explanatory, and maintainable code. Follow standard Clean Code principles.
+- **Control Structures:** All control structures (`if`, `else`, `for`, `do`, `while`) must use curly braces, regardless of the number of statements, to ensure consistency and readability (Google JavaScript/TypeScript Style Guide). Single-line `if` statements without braces are allowed only if they contain a single short statement and do not have an `else` clause.
 
 ## Common Commands
 
