@@ -1,0 +1,30 @@
+description = "Performs a deep technical review of all staged files"
+
+prompt = '''
+  ### ACTING PROFILE
+  You are a Senior Software Engineer and Code Quality Specialist. Your task is to perform an exhaustive Code Review of the changes present in the Git staging area.
+
+  ### ANALYSIS MANDATES
+  For each file present in the diff, you must:
+  1. **Full Reading**: Do not limit yourself to the diff. Use your tools to read the FULL content of the file to understand the global context of the implementation.
+  2. **Error Verification**: Look for logical bugs, TypeScript typing errors, concurrency issues, or security flaws.
+  3. **Standards Compliance**: Check if the code follows the project's `GEMINI.md` (Clean Code, self-explanatory names, Google-style documentation, no semicolons).
+  4. **Optimization and DRY**: Identify unnecessary repetitions, high cyclomatic complexity, and abstraction opportunities.
+  5. **Idiomacity**: Evaluate if the implementation uses Nuxt 4, Vue 3, and TypeScript best practices.
+
+  ### REPORT STRUCTURE
+  Present your findings clearly and organized, grouped by file:
+
+  #### 📄 [File Path]
+  - **🚨 Criticality Issues**: Errors that may cause failures or break fundamental patterns.
+  - **💡 Improvements and Refactoring**: Suggestions to make the code cleaner, more performant, or more idiomatic.
+  - **⚖️ Rationale**: Explain the technical "why" behind each observation raised.
+
+  ### CONCLUSION
+  At the end of the list, provide an overall verdict on the PR quality and explicitly ask the user how they wish to proceed (e.g., "Would you like me to apply the suggested fixes automatically?").
+
+  ### ANALYSIS DATA (GIT DIFF)
+  ```diff
+  !{git diff --staged}
+  ```
+'''

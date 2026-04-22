@@ -50,7 +50,7 @@ This document provides guidelines and contextual information for the development
 
 - **Nuxt UI:** Use components from `@nuxt/ui` (prefix `u-` or `U`) to maintain visual consistency.
 - **Responsive:** Use the `useResponsive` composable for conditional logic based on screen size.
-- **Tailwind:** Use Tailwind utility classes for fine-grained layout adjustments, following the configuration in `tailwind.config.js`.
+- **Tailwind:** Use Tailwind utility classes for fine-grained layout adjustments, following the Tailwind v4 setup in `assets/css/main.css` (`@theme`, `@custom-variant`, and tokens).
 
 ### Code Style
 
