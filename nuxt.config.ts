@@ -7,11 +7,17 @@ import { fileURLToPath } from 'url'
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxt/ui', 'nuxt-file-storage'],
+  modules: ['nuxt-file-storage', '@nuxtjs/color-mode'],
+  colorMode: {
+    classSuffix: ''
+  },
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
       include: ['@vueuse/core'],
+    },
+    ssr: {
+      external: ['@libsql/client', '@prisma/adapter-libsql'],
     },
   },
   fileStorage: {

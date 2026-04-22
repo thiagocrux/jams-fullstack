@@ -11,7 +11,7 @@ This document provides guidelines and contextual information for the development
 - **Framework:** [Nuxt 4](https://nuxt.com/) (Vue 3, Nitro)
 - **Language:** TypeScript
 - **ORM:** [Prisma](https://www.prisma.io/) with SQLite
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/) with [@nuxt/ui](https://ui.nuxt.com/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) with [shadcn-vue](https://shadcn-vue.com/)
 - **Package Manager:** pnpm
 
 ## Architecture and Folder Structure
@@ -30,6 +30,7 @@ This document provides guidelines and contextual information for the development
 ## Development Conventions
 
 ### Error Handling
+
 - **Domain Errors:** Always check `server/domain/errors/` for the most specific `AppError` subclass before throwing an error.
 - **Custom Errors:** If no suitable error exists in `server/domain/errors/`, create a new one following the `AppError` base class structure, ensuring the correct HTTP status code is assigned.
 - **Genereic Errors:** Never throw generic `Error` objects; use `AppError` subclasses to ensure predictable API responses.

@@ -1,47 +1,77 @@
 <script setup lang="ts">
-import type { File } from 'buffer'
+  import Button from '@/components/ui/button/Button.vue'
+  import Input from '@/components/ui/input/Input.vue'
+  import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+  } from '@/components/ui/dialog'
 
-interface Props {
-  isOpen: boolean
-  modelValue: any
-}
+  /**
+   * Props for the DatabaseManagementModal component.
+   */
+  interface Props {
+    /**
+     * Whether the modal is open.
+     */
+    isOpen: boolean
+  }
 
-interface Emits {
-  (event: 'uploadFile', value: File): void
-  (event: 'importDatabase'): void
-  (event: 'closeModal'): void
-}
+  /**
+   * Emits for the DatabaseManagementModal component.
+   */
+  interface Emits {
+    /**
+     * Emitted when a file is selected for upload.
+     */
+    (event: 'uploadFile', value: any): void
+    /**
+     * Emitted when the import process is confirmed.
+     */
+    (event: 'importDatabase'): void
+    /**
+     * Emitted when the modal should be closed.
+     */
+    (event: 'closeModal'): void
+  }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+  defineProps<Props>()
+  const emit = defineEmits<Emits>()
 
-const file = ref(undefined)
+  /**
+   * Handles the visibility update from the Dialog.
+   *
+   * @param value The new open state.
+   */
+  const handleOpenUpdate = (value: boolean) => {
+    if (!value) {
+      emit('closeModal')
+    }
+  }
 </script>
 
 <template>
-  <u-modal
-    :open="isOpen"
-    title="Importar banco de dados"
-    description="Selecione um arquivo de banco de dados SQLite (.db) para importar. Os dados existentes serão substituídos pelos dados do arquivo."
-    overlay
-    dismissible
-    transition
-    class="p-4 gap-y-4"
-    @update:open="$emit('closeModal')"
-    @after:leave="() => (file = undefined)"
-  >
-    <template #body>
-      <u-file-upload
-        v-model="file"
-        icon="i-lucide-file-up"
-        label="Selecione ou arraste aqui se arquivo de banco de dados."
-        description="Arquivo .db (máximo 2MB)"
-        class="min-h-48"
-        @input="(event: any) => $emit('uploadFile', event)"
-      />
-    </template>
-    <template #footer>
-      <u-button @click="$emit('importDatabase')">Confirmar</u-button>
-    </template>
-  </u-modal>
+  <Dialog :open="isOpen" @update:open="handleOpenUpdate">
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Importar banco de dados</DialogTitle>
+        <DialogDescription>
+          Selecione um arquivo de banco de dados SQLite (.db) para importar. Os
+          dados existentes serão substituídos.
+        </DialogDescription>
+      </DialogHeader>
+
+      <div class="space-y-4 py-4">
+        <Input type="file" @change="$emit('uploadFile', $event)" />
+      </div>
+
+      <DialogFooter>
+        <Button variant="outline" @click="$emit('closeModal')">Cancelar</Button>
+        <Button @click="$emit('importDatabase')">Confirmar</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>

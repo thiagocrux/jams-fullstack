@@ -1,12 +1,15 @@
 import { Application } from '../../domain/entities'
+import { NotFoundError } from '../../domain/errors'
 import type {
+  ApplicantTrackingSystemRepository,
   ApplicationRepository,
   CandidateRepository,
   CompanyRepository,
-  ApplicantTrackingSystemRepository,
 } from '../../domain/repositories'
-import { NotFoundError } from '../../domain/errors'
-import type { QueryOptions, PaginatedResult } from '../../domain/types/query-options'
+import type {
+  PaginatedResult,
+  QueryOptions,
+} from '../../domain/types/query-options'
 import type { ApplicationUseCase } from '../use-cases/application.use-case'
 
 /**
@@ -20,7 +23,9 @@ export class DefaultApplicationService implements ApplicationUseCase {
     private atsRepository: ApplicantTrackingSystemRepository
   ) {}
 
-  async create(data: Omit<Application, 'id' | 'createdAt' | 'updatedAt'>): Promise<Application> {
+  async create(
+    data: Omit<Application, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<Application> {
     const [candidate, company, ats] = await Promise.all([
       this.candidateRepository.findById(data.candidateId),
       this.companyRepository.findById(data.companyId),
@@ -80,8 +85,15 @@ export class DefaultApplicationService implements ApplicationUseCase {
     return application
   }
 
-  async listByCandidate(candidateId: string, options?: QueryOptions): Promise<PaginatedResult<Application>> {
+  async listByCandidate(
+    candidateId: string,
+    options?: QueryOptions
+  ): Promise<PaginatedResult<Application>> {
     return this.applicationRepository.findByCandidateId(candidateId, options)
+  }
+
+  async listAll(options?: QueryOptions): Promise<PaginatedResult<Application>> {
+    return this.applicationRepository.findAll(options)
   }
 
   async update(id: string, data: Partial<Application>): Promise<Application> {
@@ -98,7 +110,9 @@ export class DefaultApplicationService implements ApplicationUseCase {
     }
 
     if (data.applicantTrackingSystemId) {
-      const ats = await this.atsRepository.findById(data.applicantTrackingSystemId)
+      const ats = await this.atsRepository.findById(
+        data.applicantTrackingSystemId
+      )
       if (!ats) {
         throw new NotFoundError('ATS não encontrado.')
       }
